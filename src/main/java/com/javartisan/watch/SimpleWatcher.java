@@ -1,7 +1,5 @@
 package com.javartisan.watch;
 
-import com.sun.tools.internal.ws.wsdl.document.soap.SOAPUse;
-
 import java.util.concurrent.TimeUnit;
 
 public class SimpleWatcher implements Watcher {
