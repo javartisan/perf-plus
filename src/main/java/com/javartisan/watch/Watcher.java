@@ -8,6 +8,6 @@ public interface Watcher {
 
     public long stop();
 
-    public long to(TimeUnit timeUnit);
+    public long costTime(TimeUnit timeUnit);
 
 }
