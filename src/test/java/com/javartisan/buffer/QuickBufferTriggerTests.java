@@ -4,6 +4,7 @@ import com.javartisan.watch.SimpleWatcher;
 import com.javartisan.watch.Watcher;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,5 +52,25 @@ public class QuickBufferTriggerTests {
         System.out.println("QPS = " + ((count * 10.0) / (seconds)));
         bufferTrigger.close();
         System.out.println(count * 10 + "  " + counter.get());
+    }
+
+    @Test
+    public void testTrigger() throws InterruptedException {
+        AtomicInteger counter = new AtomicInteger();
+        ExecutorService executorService = Executors.newFixedThreadPool(8);
+        QuickBufferTrigger<String> bufferTrigger = new QuickBufferTrigger<>(20, 10000, 5, TimeUnit.SECONDS, (List<String> elements) -> {
+            executorService.submit(() -> {
+                System.out.println(LocalDateTime.now() + " " + elements);
+            });
+        }, e -> {
+            System.out.println(LocalDateTime.now() + " " + e);
+            return true;
+        });
+
+        for (int i = 0; i < 10; i++) {
+            Thread.sleep(5500);
+            bufferTrigger.add(i + "");
+        }
+
     }
 }

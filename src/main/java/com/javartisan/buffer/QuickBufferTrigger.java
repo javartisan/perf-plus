@@ -46,18 +46,20 @@ public class QuickBufferTrigger<T> implements BufferTrigger<T> {
         while (!stop) {
             List<T> toTriggerList = Locks.runWithLock(lock, () -> {
                 List<T> batchList = new ArrayList<>(batch);
-                while (queue.size() <= 0) {
+                if (queue.size() < batch) {
                     consumerCondition.await(interval, timeUnit);
                 }
-                if (queue.size() >= batch) {
-                    for (int i = 0; i < batch; i++) {
+                if (queue.size() > 0) {
+                    for (int i = 0; i < Math.min(batch, queue.size()); i++) {
                         batchList.add(queue.remove(0));
                     }
                     producerCondition.signal();
                 }
                 return batchList;
             });
-            trigger(toTriggerList);
+            if (toTriggerList.size() > 0) {
+                trigger(toTriggerList);
+            }
         }
     });
 
