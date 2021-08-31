@@ -17,7 +17,7 @@ public class QuickBufferTriggerTests {
     public void testQuickBufferTrigger() throws InterruptedException {
         AtomicInteger counter = new AtomicInteger();
         ExecutorService executorService = Executors.newFixedThreadPool(8);
-        QuickBufferTrigger<String> bufferTrigger = new QuickBufferTrigger<>(20, 10000, 5, TimeUnit.SECONDS, (List<String> elements) -> {
+        QuickBufferTrigger<String> bufferTrigger = new QuickBufferTrigger<>(200, 10000, 5, TimeUnit.SECONDS, (List<String> elements) -> {
             executorService.submit(() -> {
                 counter.addAndGet(elements.size());
             });
@@ -51,6 +51,8 @@ public class QuickBufferTriggerTests {
         System.out.println(seconds);
         System.out.println("QPS = " + ((count * 10.0) / (seconds)));
         bufferTrigger.close();
+        executorService.shutdown();
+        executorService.awaitTermination(2, TimeUnit.MINUTES);
         System.out.println(count * 10 + "  " + counter.get());
     }
 
