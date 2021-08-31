@@ -60,19 +60,25 @@ public class QuickBufferTriggerTests {
     public void testTrigger() throws InterruptedException {
         AtomicInteger counter = new AtomicInteger();
         ExecutorService executorService = Executors.newFixedThreadPool(8);
-        QuickBufferTrigger<String> bufferTrigger = new QuickBufferTrigger<>(20, 10000, 5, TimeUnit.SECONDS, (List<String> elements) -> {
+        QuickBufferTrigger<String> bufferTrigger = new QuickBufferTrigger<>(5, 10000, 5, TimeUnit.SECONDS, (List<String> elements) -> {
             executorService.submit(() -> {
-                System.out.println(LocalDateTime.now() + " " + elements);
+                System.out.println(LocalDateTime.now() + " " + elements + Thread.currentThread().getName());
             });
         }, e -> {
             System.out.println(LocalDateTime.now() + " " + e);
             return true;
         });
-
+        System.out.println(LocalDateTime.now());
         for (int i = 0; i < 10; i++) {
-            Thread.sleep(5500);
+            if (i == 1) {
+                for (int j = 0; j < 10; j++) {
+                    bufferTrigger.add(i + "");
+                }
+            }
             bufferTrigger.add(i + "");
+            Thread.sleep(4000);
         }
-
+        bufferTrigger.close();
+        Thread.sleep(10000);
     }
 }

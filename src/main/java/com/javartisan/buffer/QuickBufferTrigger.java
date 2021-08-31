@@ -43,24 +43,25 @@ public class QuickBufferTrigger<T> implements BufferTrigger<T> {
     private volatile boolean stop = false;
 
     private Thread consumerThread = new Thread(() -> {
-        while (!stop) {
-            List<T> toTriggerList = Locks.runWithLock(lock, () -> {
+        Locks.runWithLock(lock, () -> {
+            while (!stop) {
                 List<T> batchList = new ArrayList<>(batch);
                 if (queue.size() < batch) {
                     consumerCondition.await(interval, timeUnit);
                 }
                 if (queue.size() > 0) {
-                    for (int i = 0; i < Math.min(batch, queue.size()); i++) {
+                    int size = Math.min(batch, queue.size());
+                    for (int i = 0; i < size; i++) {
                         batchList.add(queue.remove(0));
                     }
-                    producerCondition.signal();
+                    producerCondition.signalAll();
                 }
-                return batchList;
-            });
-            if (toTriggerList.size() > 0) {
-                trigger(toTriggerList);
+                if (batchList.size() > 0) {
+                    trigger(batchList);
+                }
             }
-        }
+            return null;
+        });
     });
 
     @Override
