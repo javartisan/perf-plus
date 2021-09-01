@@ -2,7 +2,7 @@ package com.javartisan.watch;
 
 import java.util.concurrent.TimeUnit;
 
-public interface Watcher {
+interface Watcher {
 
     public long start();
 

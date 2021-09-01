@@ -2,7 +2,7 @@ package com.javartisan.watch;
 
 import java.util.concurrent.TimeUnit;
 
-public class SimpleWatcher implements Watcher {
+class SimpleWatcher implements Watcher {
 
     private static final ThreadLocal<Long> START_TL = new ThreadLocal<>();
     private static final ThreadLocal<Long> STOP_TL = new ThreadLocal<>();

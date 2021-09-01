@@ -1,7 +1,6 @@
 package com.javartisan.buffer;
 
-import com.javartisan.watch.SimpleWatcher;
-import com.javartisan.watch.Watcher;
+import com.javartisan.watch.CostTimeUtils;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
@@ -26,11 +25,9 @@ public class QuickBufferTriggerTests {
             return true;
         });
 
-        Watcher watcher = new SimpleWatcher();
-
         int count = Integer.MAX_VALUE / 200;
         Thread[] threads = new Thread[10];
-        watcher.start();
+        CostTimeUtils.start();
         for (int k = 0; k < 10; k++) {
             threads[k] = new Thread(() -> {
                 for (int i = 0; i < count; i++) {
@@ -46,8 +43,8 @@ public class QuickBufferTriggerTests {
         for (int i = 0; i < threads.length; i++) {
             threads[i].join();
         }
-        watcher.stop();
-        long seconds = watcher.costTime(TimeUnit.SECONDS);
+        CostTimeUtils.stop();
+        long seconds = CostTimeUtils.costTime(TimeUnit.SECONDS);
         System.out.println(seconds);
         System.out.println("QPS = " + ((count * 10.0) / (seconds)));
         bufferTrigger.close();
